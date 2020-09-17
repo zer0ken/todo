@@ -199,10 +199,12 @@ async def todo_clear(ctx: Context):
 
 @todo.command(name='help', aliases=('도움말',))
 async def todo_help(ctx: Context):
-    help = '*`/todo`*, *`/todo l`*, or *`/todo list`* to see your todo list.\n' \
+    help = '*`/todo help`* to check how to use this bot.\n' \
+           '*`/todo`*, *`/todo l`*, or *`/todo list`* to see your todo list.\n' \
            '*`/todo <task>`*, *`/todo a <task>`* or *`/todo add <task>`* to add new task to do.\n' \
            '*`/todo r <words>`* or *`/todo remove <words>`* to remove task you have done or canceled. it will search ' \
-           'through your todo list to find tasks including `words` and remove the oldest one.'
+           'through your todo list to find tasks including `words` and remove the oldest one.\n' \
+           '*`/todo clear`* to clear your todo list. **!!! IT CAN NOT BE RESTORED !!!**'
     await ctx.send(help)
 
 
