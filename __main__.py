@@ -140,6 +140,7 @@ async def update_todo(todo_embed: Embed, ctx: Context, content: str = None):
         tasks.append(ctx.send(NOTHING_TO_DO, delete_after=60))
         if data_message is not None:
             tasks.append(data_message.delete())
+    tasks.append(ctx.message.delete(delay=60))
     await asyncio.wait(tasks)
 
 
