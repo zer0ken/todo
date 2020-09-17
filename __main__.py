@@ -123,11 +123,11 @@ async def update_todo(todo_embed: Embed, ctx: Context, content: str = None):
     tasks = list()
     if todo_embed.description:
         if ctx.guild is None:
-            tasks.append(ctx.send(embed=todo_embed))
+            tasks.append(ctx.send(embed=todo_embed, delete_after=60))
             if data_message is not None:
                 tasks.append(data_message.delete())
         else:
-            tasks.append(ctx.send(content=content, embed=todo_embed))
+            tasks.append(ctx.send(content=content, embed=todo_embed, delete_after=60))
             if data_message is None:
                 tasks.append(ctx.author.send(content, embed=todo_embed))
             else:
