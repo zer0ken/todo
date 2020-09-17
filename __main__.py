@@ -63,8 +63,16 @@ def tokens_len(count: tuple or int):
 
 class TodoEmbed(Embed):
     def __init__(self, **kwargs):
-        super().__init__(title=':white_check_mark: Todo list', colour=Colour.from_rgb(119, 178, 85), **kwargs)
+        super().__init__(title=':white_check_mark: Todo list of **', colour=Colour.from_rgb(119, 178, 85), **kwargs)
         self.set_footer(text=FOOTER)
+
+    @staticmethod
+    def from_embed(origin: Embed):
+        return TodoEmbed(description=origin.description)
+
+    def set_author_(self, user: User):
+        self.title += str(user) + '**'
+        self.set_thumbnail(url=user.avatar_url)
 
 
 bot = Bot('/', None, case_insensitive=True)
@@ -95,7 +103,7 @@ def get_todo_embed(message: Message):
         return TodoEmbed()
     for e in message.embeds:
         if e.footer and e.footer.text == FOOTER:
-            return e
+            return TodoEmbed.from_embed(e)
     return TodoEmbed()
 
 
@@ -118,8 +126,9 @@ async def clear_messages(user: User):
         await message.delete()
 
 
-async def update_todo(todo_embed: Embed, ctx: Context, content: str = None):
+async def update_todo(todo_embed: TodoEmbed, ctx: Context, content: str = None):
     data_message = await get_message(ctx.author)
+    todo_embed.set_author_(ctx.author)
     tasks = list()
     if todo_embed.description:
         if ctx.guild is None:
@@ -140,7 +149,6 @@ async def update_todo(todo_embed: Embed, ctx: Context, content: str = None):
         tasks.append(ctx.send(NOTHING_TO_DO, delete_after=60))
         if data_message is not None:
             tasks.append(data_message.delete())
-    tasks.append(ctx.message.delete(delay=60))
     await asyncio.wait(tasks)
 
 
@@ -212,6 +220,8 @@ async def todo_help(ctx: Context):
 async def on_command_error(context: Context, exception: CommandError):
     if isinstance(exception, CommandOnCooldown):
         await context.send('You\'re on cooldown now. Wait {:.2} seconds.'.format(exception.retry_after))
+        return
+    raise exception
 
 
 async def on_ready():
