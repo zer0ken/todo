@@ -191,8 +191,7 @@ async def todo_remove(ctx: Context, *, key: str):
     todo_embed = get_todo_embed(data_message)
     removed = remove_todo(todo_embed, key)
     if removed:
-        await ctx.send(f'Removed `{removed}`!')
-        await update_todo(todo_embed, ctx)
+        await update_todo(todo_embed, ctx, f'Removed `{removed}` from your todo list!')
     else:
         await ctx.send(f'task about `{key}` is not found.')
 
