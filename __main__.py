@@ -1,5 +1,6 @@
 import asyncio
 import sys
+from typing import Union, Optional
 
 from decouple import config
 from discord import User, DMChannel, Message, Embed, Colour, Activity, ActivityType
@@ -126,7 +127,8 @@ async def clear_messages(user: User):
         await message.delete()
 
 
-async def update_todo(todo_embed: TodoEmbed, ctx: Context, content: str = None):
+async def update_todo(todo_embed: TodoEmbed, ctx: Context,
+                      content: str = None, delete_after: Optional[Union[int, float]] = 60):
     data_message = await get_message(ctx.author)
     todo_embed.set_author_(ctx.author)
     tasks = list()
@@ -136,7 +138,7 @@ async def update_todo(todo_embed: TodoEmbed, ctx: Context, content: str = None):
             if data_message is not None:
                 tasks.append(data_message.delete())
         else:
-            tasks.append(ctx.send(content=content, embed=todo_embed, delete_after=60))
+            tasks.append(ctx.send(content=content, embed=todo_embed, delete_after=delete_after))
             if data_message is None:
                 tasks.append(ctx.author.send(content, embed=todo_embed))
             else:
@@ -146,7 +148,7 @@ async def update_todo(todo_embed: TodoEmbed, ctx: Context, content: str = None):
         if data_message is not None:
             tasks.append(data_message.delete())
     else:
-        tasks.append(ctx.send(NOTHING_TO_DO, delete_after=60))
+        tasks.append(ctx.send(NOTHING_TO_DO, delete_after=delete_after))
         if data_message is not None:
             tasks.append(data_message.delete())
     await asyncio.wait(tasks)
@@ -181,7 +183,7 @@ async def todo_add(ctx: Context, *, content: str):
 @todo_cooldown
 async def todo_list(ctx: Context):
     data_message = await get_message(ctx.author)
-    await update_todo(get_todo_embed(data_message), ctx)
+    await update_todo(get_todo_embed(data_message), ctx, delete_after=None)
 
 
 @todo.command(name='-', aliases=('remove', 'r', '삭제'))
